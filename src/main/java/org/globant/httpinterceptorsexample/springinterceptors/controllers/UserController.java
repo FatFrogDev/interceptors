@@ -16,16 +16,25 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
-
+/**
+ * 
+* @author FatFrogDev
+* <p>Handles all the petitions for the exercise.</p>
+ */
 @RestController
 @RequestMapping("/user")
-
 @SuppressWarnings("rawtypes")
 public class UserController {
 
     @Autowired
     UserServiceImpl service;
 
+    /**
+     * Save an user into the database when correct and valid args are given.
+     * @param user
+     * @param req HttpServletRequest
+     * @return ResponseEntity declaring user was saved correctly.
+     */
     @PostMapping("/save")
     public ResponseEntity save(@RequestBody User user){
         service.save(user);
@@ -38,7 +47,13 @@ public class UserController {
         return ResponseEntity.ok().body("User edited correctly");
     }
 
-    @PostMapping("/login")
+    /**
+     * Allows an user to log in to the system to unlock the special route {@link findAll}
+     * @param user
+     * @param req
+     * @return ResponseEntity giving feedback whether the petition was correctly or no.
+     */
+    @PostMapping("/login") 
     public ResponseEntity login(@RequestBody User user, HttpServletRequest req){
         Optional<User> foundUser = service.findByEmailAndPassword(user.getEmail(), user.getPassword());
         HttpSession session = req.getSession();
@@ -54,9 +69,15 @@ public class UserController {
         }
     }
 
+
+    /**
+     * Allows an user to see all the registered users when previously logged in.
+     * @param user
+     * @param req HttpServletRequest
+     * @return List <User> registered | Internal server error.
+     */
     @GetMapping("/find/all")
     public ResponseEntity findAll(HttpServletRequest req){
-        HttpSession session = req.getSession();
         List<User> users = service.findAll();
         if (!users.isEmpty()){
             return ResponseEntity.ok().body(users);
